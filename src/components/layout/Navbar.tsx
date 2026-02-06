@@ -16,6 +16,11 @@ export const Navbar: React.FC = () => {
                         </Link>
                     </li>
                     <li className="nav-item">
+                        <Link to="/projects" className="nav-links">
+                            Projects
+                        </Link>
+                    </li>
+                    <li className="nav-item">
                         <Link to="/features" className="nav-links">
                             Features
                         </Link>
