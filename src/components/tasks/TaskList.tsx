@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { getTasksByProjectId } from '../../services/taskService';
+import React, { useEffect, useState, useCallback } from 'react';
+import { getTasksByProjectId, updateTaskStatus } from '../../services/taskService';
 import type { Task } from '../../types/task';
+import CreateTaskForm from './CreateTaskForm';
 
 interface TaskListProps {
     projectId: number;
@@ -11,27 +12,47 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchTasks = async () => {
-            try {
-                const data = await getTasksByProjectId(projectId);
-                setTasks(data);
-            } catch (err) {
-                console.error(err);
-                setError('Failed to fetch tasks.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchTasks();
+    const fetchTasks = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await getTasksByProjectId(projectId);
+            setTasks(data);
+        } catch (err) {
+            console.error(err);
+            setError('Failed to fetch tasks.');
+        } finally {
+            setLoading(false);
+        }
     }, [projectId]);
 
-    if (loading) return <div>Loading tasks...</div>;
+    useEffect(() => {
+        fetchTasks();
+    }, [fetchTasks]);
+
+    const handleStatusChange = async (taskId: number, newStatus: string) => {
+        try {
+            await updateTaskStatus(taskId, newStatus);
+            // Optimistic update or refetch
+            setTasks((prevTasks) =>
+                prevTasks.map((task) =>
+                    task.id === taskId ? { ...task, status: newStatus } : task
+                )
+            );
+        } catch (err) {
+            console.error(err);
+            alert('Failed to update task status');
+        }
+    };
+
+    if (loading && tasks.length === 0) return <div>Loading tasks...</div>;
     if (error) return <div>{error}</div>;
 
     return (
         <div>
+            <div style={{ marginBottom: '2rem' }}>
+                <CreateTaskForm projectId={projectId} onTaskCreated={fetchTasks} />
+            </div>
+
             {tasks.length === 0 ? (
                 <p>No tasks found for this project.</p>
             ) : (
@@ -41,7 +62,7 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
                             key={task.id}
                             style={{
                                 border: '1px solid #eee',
-                                padding: '0.5rem',
+                                padding: '1rem',
                                 marginBottom: '0.5rem',
                                 borderRadius: '4px',
                                 backgroundColor: '#fff',
@@ -51,22 +72,27 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
                             }}
                         >
                             <div>
-                                <strong>{task.title}</strong>
+                                <strong style={{ fontSize: '1.1rem' }}>{task.title}</strong>
                                 <p style={{ margin: '0.2rem 0', fontSize: '0.9rem', color: '#666' }}>
                                     {task.description}
                                 </p>
                             </div>
-                            <span
-                                style={{
-                                    fontSize: '0.8rem',
-                                    padding: '0.2rem 0.5rem',
-                                    borderRadius: '12px',
-                                    backgroundColor: '#e0f2fe',
-                                    color: '#0369a1',
-                                }}
-                            >
-                                {task.status}
-                            </span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                <select
+                                    value={task.status}
+                                    onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                                    style={{
+                                        padding: '0.3rem',
+                                        borderRadius: '4px',
+                                        border: '1px solid #ccc',
+                                        backgroundColor: '#f8f9fa'
+                                    }}
+                                >
+                                    <option value="TODO">To Do</option>
+                                    <option value="IN_PROGRESS">In Progress</option>
+                                    <option value="DONE">Done</option>
+                                </select>
+                            </div>
                         </li>
                     ))}
                 </ul>
