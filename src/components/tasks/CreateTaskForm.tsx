@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { createTask } from '../../services/taskService';
-import { Task } from '../../types/task';
 
 interface CreateTaskFormProps {
     projectId: number;
