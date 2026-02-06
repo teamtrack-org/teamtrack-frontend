@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { getProjects } from '../services/projectService';
 import type { Project } from '../types/project';
 import CreateProjectForm from '../components/projects/CreateProjectForm';
@@ -51,7 +52,11 @@ const Projects: React.FC = () => {
                                 boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                             }}
                         >
-                            <h3>{project.name}</h3>
+                            <h3>
+                                <Link to={`/projects/${project.id}`} style={{ textDecoration: 'none', color: '#333' }}>
+                                    {project.name}
+                                </Link>
+                            </h3>
                             <p>{project.description}</p>
                         </li>
                     ))}
