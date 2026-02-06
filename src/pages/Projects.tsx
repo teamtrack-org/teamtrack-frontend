@@ -1,35 +1,42 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { getProjects } from '../services/projectService';
 import type { Project } from '../types/project';
+import CreateProjectForm from '../components/projects/CreateProjectForm';
 
 const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const fetchProjects = async () => {
-            try {
-                const data = await getProjects();
-                setProjects(data);
-            } catch (err) {
-                setError('Failed to fetch projects');
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProjects();
+    const fetchProjects = useCallback(async () => {
+        setLoading(true);
+        try {
+            const data = await getProjects();
+            setProjects(data);
+            setError(null);
+        } catch (err) {
+            setError('Failed to fetch projects');
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     }, []);
 
-    if (loading) return <div>Loading projects...</div>;
-    if (error) return <div>{error}</div>;
+    useEffect(() => {
+        fetchProjects();
+    }, [fetchProjects]);
+
+    if (loading && projects.length === 0) return <div>Loading projects...</div>;
 
     return (
         <div style={{ padding: '2rem' }}>
             <h1>Projects</h1>
-            {projects.length === 0 ? (
+
+            <CreateProjectForm onProjectCreated={fetchProjects} />
+
+            {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+
+            {projects.length === 0 && !loading ? (
                 <p>No projects found.</p>
             ) : (
                 <ul style={{ listStyle: 'none', padding: 0 }}>
