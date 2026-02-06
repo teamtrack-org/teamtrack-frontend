@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProjectById } from '../services/projectService';
 import type { Project } from '../types/project';
+import TaskList from '../components/tasks/TaskList';
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -42,13 +43,7 @@ const ProjectDetail: React.FC = () => {
 
             <div style={{ padding: '1rem', backgroundColor: '#f5f5f5', borderRadius: '8px' }}>
                 <h2>Tasks</h2>
-                <p>Task management features coming soon...</p>
-                {/* 
-                  TODO: Implement Task List
-                  - Fetch tasks for this project
-                  - Display task status/assigned to
-                  - Add Task button
-                */}
+                <TaskList projectId={project.id} />
             </div>
         </div>
     );
