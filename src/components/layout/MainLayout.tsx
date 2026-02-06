@@ -1,0 +1,14 @@
+import React from 'react';
+import { Outlet } from 'react-router-dom';
+import { Navbar } from './Navbar';
+
+export const MainLayout: React.FC = () => {
+    return (
+        <div className="main-layout">
+            <Navbar />
+            <main className="content">
+                <Outlet />
+            </main>
+        </div>
+    );
+};
