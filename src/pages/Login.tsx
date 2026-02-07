@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const { login } = useAuth();
     const navigate = useNavigate();
@@ -14,12 +14,12 @@ const Login: React.FC = () => {
         e.preventDefault();
         setError(null);
 
-        if (username && password) {
-            const success = await login(username, password);
+        if (email && password) {
+            const success = await login(email, password);
             if (success) {
                 navigate('/');
             } else {
-                setError('Invalid credentials');
+                setError('Invalid credentials. Please check your email and password.');
             }
         }
     };
@@ -60,11 +60,12 @@ const Login: React.FC = () => {
                 )}
 
                 <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#4b5563' }}>Username</label>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#4b5563' }}>Email</label>
                     <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="your.email@example.com"
                         style={{
                             width: '100%',
                             padding: '0.75rem',

@@ -29,9 +29,30 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
             setName('');
             setDescription('');
             onProjectCreated();
-        } catch (err) {
-            console.error(err);
-            setError('Failed to create project.');
+        } catch (err: any) {
+            console.error('Project creation error:', err);
+            let errorMessage = 'Failed to create project.';
+
+            if (err.response) {
+                // Server responded with an error
+                if (err.response.data) {
+                    if (typeof err.response.data === 'string') {
+                        errorMessage = err.response.data;
+                    } else if (err.response.data.message) {
+                        errorMessage = err.response.data.message;
+                    } else if (err.response.data.errors) {
+                        // Validation errors
+                        errorMessage = Object.values(err.response.data.errors).join(', ');
+                    }
+                }
+                errorMessage = `Error ${err.response.status}: ${errorMessage}`;
+            } else if (err.request) {
+                errorMessage = 'No response from server. Please check if the backend is running.';
+            } else {
+                errorMessage = err.message || 'An unexpected error occurred.';
+            }
+
+            setError(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
