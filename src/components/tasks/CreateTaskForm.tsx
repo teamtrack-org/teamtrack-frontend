@@ -50,6 +50,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
                 <input
                     type="text"
                     placeholder="Task Title"
+                    aria-label="Task Title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     required
@@ -57,6 +58,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
                 />
                 <textarea
                     placeholder="Description"
+                    aria-label="Task Description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
@@ -66,6 +68,7 @@ const CreateTaskForm: React.FC<CreateTaskFormProps> = ({
             <button
                 type="submit"
                 disabled={isSubmitting}
+                aria-busy={isSubmitting}
                 style={{
                     padding: '0.4rem 0.8rem',
                     backgroundColor: '#10b981',

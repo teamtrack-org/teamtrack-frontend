@@ -4,9 +4,9 @@ import './Navbar.css';
 
 export const Navbar: React.FC = () => {
     return (
-        <nav className="navbar">
+        <nav className="navbar" aria-label="Main Navigation">
             <div className="navbar-container">
-                <Link to="/" className="navbar-logo">
+                <Link to="/" className="navbar-logo" aria-label="TeamTrack Home">
                     TeamTrack
                 </Link>
                 <ul className="nav-menu">

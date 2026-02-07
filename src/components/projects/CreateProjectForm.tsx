@@ -63,6 +63,7 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     required
+                    aria-required="true"
                     style={{ width: '100%', padding: '0.5rem' }}
                 />
             </div>
@@ -78,12 +79,14 @@ const CreateProjectForm: React.FC<CreateProjectFormProps> = ({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     required
+                    aria-required="true"
                     style={{ width: '100%', padding: '0.5rem', minHeight: '100px' }}
                 />
             </div>
             <button
                 type="submit"
                 disabled={isSubmitting}
+                aria-busy={isSubmitting}
                 style={{
                     padding: '0.5rem 1rem',
                     backgroundColor: '#2563eb',
