@@ -84,6 +84,7 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
                                 <select
                                     value={task.status}
                                     onChange={(e) => handleStatusChange(task.id, e.target.value)}
+                                    aria-label={`Change status for task: ${task.title}`}
                                     style={{
                                         padding: '0.3rem',
                                         borderRadius: '4px',
