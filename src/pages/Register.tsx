@@ -19,7 +19,17 @@ const Register: React.FC = () => {
             navigate('/login');
         } catch (err: any) {
             console.error('Registration failed', err);
-            setError(err.response?.data || 'Failed to register. Please try again.');
+            let message = 'Failed to register.';
+            if (err.response) {
+                // Server responded with a status code
+                message = `Error ${err.response.status}: ${typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data)}`;
+            } else if (err.request) {
+                // Request made but no response
+                message = 'No response from server. Is the backend running?';
+            } else {
+                message = err.message;
+            }
+            setError(message);
         } finally {
             setIsSubmitting(false);
         }
