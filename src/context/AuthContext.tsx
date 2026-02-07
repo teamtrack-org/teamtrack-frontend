@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import axios from 'axios';
+import { verifyCredentials } from '../services/authService';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -13,7 +13,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('mock_token');
+        const token = localStorage.getItem('auth_token');
         if (token) {
             setIsAuthenticated(true);
         }
@@ -21,24 +21,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const login = async (username: string, password: string): Promise<boolean> => {
         const token = 'Basic ' + btoa(username + ':' + password);
-        try {
-            // Verify credentials by making a lightweight request (checking projects)
-            // Ideally we'd have a /me endpoint, but /projects works for test
-            await axios.get(import.meta.env.VITE_API_URL + '/projects', {
-                headers: { Authorization: token }
-            });
 
+        const isValid = await verifyCredentials(token);
+
+        if (isValid) {
             localStorage.setItem('auth_token', token);
             setIsAuthenticated(true);
             return true;
-        } catch (error) {
-            console.error("Login failed", error);
+        } else {
             return false;
         }
     };
 
     const logout = () => {
-        localStorage.removeItem('mock_token');
+        localStorage.removeItem('auth_token');
         setIsAuthenticated(false);
     };
 
