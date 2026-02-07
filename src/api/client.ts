@@ -17,11 +17,12 @@ const apiClient: AxiosInstance = axios.create({
 // Request interceptor
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        // You can add auth tokens here if needed in the future
-        // const token = localStorage.getItem('token');
-        // if (token) {
-        //   config.headers.Authorization = `Bearer ${token}`;
-        // }
+        const token = localStorage.getItem('auth_token');
+        if (token) {
+            // Check if it's already a Basic or Bearer token, otherwise assume Bearer
+            // For Basic Auth, we'll store "Basic <base64>" in auth_token
+            config.headers.Authorization = token;
+        }
         return config;
     },
     (error: AxiosError) => {

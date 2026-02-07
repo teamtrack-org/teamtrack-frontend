@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import { verifyCredentials } from '../services/authService';
 
 interface AuthContextType {
     isAuthenticated: boolean;
-    login: () => void;
+    login: (username: string, password: string) => Promise<boolean>;
     logout: () => void;
 }
 
@@ -12,19 +13,28 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('mock_token');
+        const token = localStorage.getItem('auth_token');
         if (token) {
             setIsAuthenticated(true);
         }
     }, []);
 
-    const login = () => {
-        localStorage.setItem('mock_token', '1234567890');
-        setIsAuthenticated(true);
+    const login = async (username: string, password: string): Promise<boolean> => {
+        const token = 'Basic ' + btoa(username + ':' + password);
+
+        const isValid = await verifyCredentials(token);
+
+        if (isValid) {
+            localStorage.setItem('auth_token', token);
+            setIsAuthenticated(true);
+            return true;
+        } else {
+            return false;
+        }
     };
 
     const logout = () => {
-        localStorage.removeItem('mock_token');
+        localStorage.removeItem('auth_token');
         setIsAuthenticated(false);
     };
 
