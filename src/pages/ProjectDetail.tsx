@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { getProjectById } from '../services/projectService';
 import type { Project } from '../types/project';
 import TaskList from '../components/tasks/TaskList';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorMessage from '../components/common/ErrorMessage';
 
 const ProjectDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -27,9 +29,9 @@ const ProjectDetail: React.FC = () => {
         fetchProject();
     }, [id]);
 
-    if (loading) return <div>Loading project details...</div>;
-    if (error) return <div>{error}</div>;
-    if (!project) return <div>Project not found</div>;
+    if (loading) return <LoadingSpinner />;
+    if (error) return <ErrorMessage message={error} />;
+    if (!project) return <ErrorMessage message="Project not found" />;
 
     return (
         <div style={{ padding: '2rem' }}>

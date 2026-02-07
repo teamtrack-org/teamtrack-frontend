@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { getProjects } from '../services/projectService';
 import type { Project } from '../types/project';
 import CreateProjectForm from '../components/projects/CreateProjectForm';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import ErrorMessage from '../components/common/ErrorMessage';
+import EmptyState from '../components/common/EmptyState';
 
 const Projects: React.FC = () => {
     const [projects, setProjects] = useState<Project[]>([]);
@@ -27,7 +30,7 @@ const Projects: React.FC = () => {
         fetchProjects();
     }, [fetchProjects]);
 
-    if (loading && projects.length === 0) return <div>Loading projects...</div>;
+    if (loading && projects.length === 0) return <LoadingSpinner />;
 
     return (
         <div style={{ padding: '2rem' }}>
@@ -35,10 +38,10 @@ const Projects: React.FC = () => {
 
             <CreateProjectForm onProjectCreated={fetchProjects} />
 
-            {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
+            {error && <ErrorMessage message={error} />}
 
             {projects.length === 0 && !loading ? (
-                <p>No projects found.</p>
+                <EmptyState message="No projects found. Create one above!" />
             ) : (
                 <ul style={{ listStyle: 'none', padding: 0 }}>
                     {projects.map((project) => (

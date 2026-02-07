@@ -2,6 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { getTasksByProjectId, updateTaskStatus } from '../../services/taskService';
 import type { Task } from '../../types/task';
 import CreateTaskForm from './CreateTaskForm';
+import LoadingSpinner from '../common/LoadingSpinner';
+import ErrorMessage from '../common/ErrorMessage';
+import EmptyState from '../common/EmptyState';
 
 interface TaskListProps {
     projectId: number;
@@ -44,8 +47,8 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
         }
     };
 
-    if (loading && tasks.length === 0) return <div>Loading tasks...</div>;
-    if (error) return <div>{error}</div>;
+    if (loading && tasks.length === 0) return <LoadingSpinner />;
+    if (error) return <ErrorMessage message={error} />;
 
     return (
         <div>
@@ -54,7 +57,7 @@ const TaskList: React.FC<TaskListProps> = ({ projectId }) => {
             </div>
 
             {tasks.length === 0 ? (
-                <p>No tasks found for this project.</p>
+                <EmptyState message="No tasks found for this project." />
             ) : (
                 <ul style={{ listStyle: 'none', padding: 0 }}>
                     {tasks.map((task) => (
