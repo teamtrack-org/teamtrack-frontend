@@ -8,12 +8,19 @@ const Login: React.FC = () => {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Mock validation
+        setError(null);
+
         if (username && password) {
-            login();
-            navigate('/');
+            const success = await login(username, password);
+            if (success) {
+                navigate('/');
+            } else {
+                setError('Invalid credentials');
+            }
         }
     };
 
@@ -37,6 +44,21 @@ const Login: React.FC = () => {
                 }}
             >
                 <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>Login to TeamTrack</h2>
+
+                {error && (
+                    <div style={{
+                        padding: '0.75rem',
+                        marginBottom: '1rem',
+                        backgroundColor: '#fee2e2',
+                        color: '#b91c1c',
+                        borderRadius: '4px',
+                        fontSize: '0.9rem',
+                        textAlign: 'center'
+                    }}>
+                        {error}
+                    </div>
+                )}
+
                 <div style={{ marginBottom: '1rem' }}>
                     <label style={{ display: 'block', marginBottom: '0.5rem', color: '#4b5563' }}>Username</label>
                     <input
