@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { registerUser } from '../services/authService';
 
-const Login: React.FC = () => {
-    const [username, setUsername] = useState('');
+const Register: React.FC = () => {
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { login } = useAuth();
-    const navigate = useNavigate();
-
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
+        setIsSubmitting(true);
 
-        if (username && password) {
-            const success = await login(username, password);
-            if (success) {
-                navigate('/');
-            } else {
-                setError('Invalid credentials');
-            }
+        try {
+            await registerUser({ username: email, password });
+            navigate('/login');
+        } catch (err: any) {
+            console.error('Registration failed', err);
+            setError(err.response?.data || 'Failed to register. Please try again.');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -43,7 +44,7 @@ const Login: React.FC = () => {
                     maxWidth: '400px'
                 }}
             >
-                <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>Login to TeamTrack</h2>
+                <h2 style={{ textAlign: 'center', marginBottom: '1.5rem', color: '#1f2937' }}>Join TeamTrack</h2>
 
                 {error && (
                     <div style={{
@@ -60,11 +61,11 @@ const Login: React.FC = () => {
                 )}
 
                 <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#4b5563' }}>Username</label>
+                    <label style={{ display: 'block', marginBottom: '0.5rem', color: '#4b5563' }}>Email Address</label>
                     <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
                         style={{
                             width: '100%',
                             padding: '0.75rem',
@@ -93,26 +94,28 @@ const Login: React.FC = () => {
                 </div>
                 <button
                     type="submit"
+                    disabled={isSubmitting}
                     style={{
                         width: '100%',
                         padding: '0.75rem',
-                        backgroundColor: '#2563eb',
+                        backgroundColor: '#10b981',
                         color: 'white',
                         border: 'none',
                         borderRadius: '4px',
                         fontSize: '1rem',
-                        cursor: 'pointer',
-                        fontWeight: 600
+                        cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                        fontWeight: 600,
+                        opacity: isSubmitting ? 0.7 : 1
                     }}
                 >
-                    Sign In
+                    {isSubmitting ? 'Creating Account...' : 'Sign Up'}
                 </button>
                 <div style={{ marginTop: '1rem', textAlign: 'center', fontSize: '0.9rem' }}>
-                    Don't have an account? <Link to="/register">Sign Up</Link>
+                    Already have an account? <Link to="/login">Sign In</Link>
                 </div>
             </form>
         </div>
     );
 };
 
-export default Login;
+export default Register;

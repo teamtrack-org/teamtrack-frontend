@@ -1,4 +1,5 @@
 import apiClient from '../api/client';
+import type { LoginRequest } from '../types/auth'; // Reusing LoginRequest type for now as it has username/password
 
 export const verifyCredentials = async (authHeader: string): Promise<boolean> => {
     try {
@@ -12,4 +13,11 @@ export const verifyCredentials = async (authHeader: string): Promise<boolean> =>
         console.error('Credential verification failed', error);
         return false;
     }
+};
+
+export const registerUser = async (credentials: LoginRequest): Promise<void> => {
+    await apiClient.post('/auth/register', {
+        email: credentials.username, // mapping username to email for backend
+        password: credentials.password
+    });
 };
